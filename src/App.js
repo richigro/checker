@@ -1,9 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import './App.css';
 
 const MainApp = styled.div`
-  /* border: 5px solid red; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,6 +22,7 @@ const Piece = styled.div`
   width: 45px;
   height: 45px;
   border-radius: 50%;
+  border: ${({ isSelected }) => (isSelected ? '3px solid blue' : 'none')};
   background-color: ${({ piece }) => (piece ? (piece === 'red' ? 'red' : 'black') : 'white')};
 `;
 
@@ -41,10 +40,10 @@ const INITIAL_BOARD_STATE = [
 const GameBoard = () => {
   // player 1 can only move red pieces
   // player 2 can only move black pieces
-  const [currentTurn, setCurrentTurn] = React.setState('player1');
+  const [isPlayerOneTurn, setIsPlayerOneTurn] = React.useState(true);
   // const [player1Graveyard, setPlayer1Gravetyard] = React.useState([])
   // const [player2Graveyard, setPlayer2Gravetyard] = React.useState([])
-  const [moveTo, setMoveTo] = React.useState(undefined);
+  // const [moveTo, setMoveTo] = React.useState(undefined);
   const [selectedPiece, setSelectedPiece] = React.useState(undefined);
   const [boardState, setBoardState] = React.useState(INITIAL_BOARD_STATE);
 
@@ -60,7 +59,7 @@ const GameBoard = () => {
     // make sure a piece currently exists at the given location.
   };
 
-  const handleSpaceClick = (piece, row, column) => {
+  const handleMove = (piece, row, column) => {
     if (!piece) {
       console.log('you clicked on an empty space');
       // if there is arlready a selected piece move it here
@@ -75,40 +74,63 @@ const GameBoard = () => {
         boardStateCopy[row][column] = selectedPiece.piece;
 
         setBoardState(boardStateCopy);
+        setSelectedPiece(undefined);
+        setIsPlayerOneTurn((prev) => !prev);
       }
       return;
     }
     setSelectedPiece({ piece, row, column });
+    //end of move
+    // swith two other player
+    // if (currentTurn === 'Player1') {
+    //   setCurrentTurn('Player2');
+    // } else {
+    //   setCurrentTurn('Player1');
+    // }
   };
 
   const isValidMove = (selectedPieceObject, to) => {
     const { piece, row: fromRow, column: fromColumn } = selectedPieceObject;
     console.log('the piece: ', piece, fromRow, fromColumn);
     if (piece === 'red') {
-      alert('tis a red');
+      // red pieces can only move up in the board
     } else {
-      alert('its a black');
+      // black pieces can only move down in the board
     }
   };
 
+  const handleReset = () => {
+    console.log('trying to re-start');
+    console.log('the current board state: ', boardState, INITIAL_BOARD_STATE);
+    // setIsPlayerOneTurn(true);
+    // setSelectedPiece(undefined);
+    setBoardState(INITIAL_BOARD_STATE);
+  };
+
   return (
-    <MainApp style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <MainApp>
       <h1>The GameBoard</h1>
       <div>
-        <h2>hi</h2>
+        <h2>Current Turn: {isPlayerOneTurn ? 'Player 1' : 'Player 2'}</h2>
+        <button onClick={handleReset}>Re-start Game</button>
       </div>
       <ul>
         {boardState.map((row, rowIndex) => {
           return (
             <li style={{ display: 'flex', width: 'fit-content' }}>
               {row.map((piece, columnIndex) => {
+                const isSelected =
+                  selectedPiece &&
+                  piece !== null &&
+                  rowIndex === selectedPiece.row &&
+                  columnIndex === selectedPiece.column;
                 return (
                   <Square
                     onClick={() => {
                       console.log('currently selected piece: ', selectedPiece);
-                      handleSpaceClick(piece, rowIndex, columnIndex);
+                      handleMove(piece, rowIndex, columnIndex);
                     }}>
-                    <Piece piece={piece} />
+                    <Piece piece={piece} isSelected={isSelected} />
                   </Square>
                 );
               })}
