@@ -63,7 +63,7 @@ const GameBoard = () => {
           // change player turn
           setIsPlayerOneTurn((prev) => !prev);
         } else {
-          // alert('Invalid move. Try another spot.');
+          alert('Invalid move. Try Moving selected piece to another location.');
           return;
         }
       }
@@ -116,10 +116,10 @@ const GameBoard = () => {
   const isMovingLeft = (fromColumn, toColumn) => fromColumn > toColumn;
 
   const handleReset = () => {
-    console.log('trying to re-start');
-    console.log('the current board state: ', boardState, INITIAL_BOARD_STATE);
-    // setIsPlayerOneTurn(true);
-    // setSelectedPiece(undefined);
+    // console.log('trying to re-start');
+    // console.log('the current board state: ', boardState, INITIAL_BOARD_STATE);
+    setIsPlayerOneTurn(true);
+    setSelectedPiece(undefined);
     setBoardState(INITIAL_BOARD_STATE);
   };
 
