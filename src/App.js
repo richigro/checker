@@ -38,64 +38,46 @@ const INITIAL_BOARD_STATE = [
 ];
 
 const GameBoard = () => {
-  // player 1 can only move red pieces
-  // player 2 can only move black pieces
   const [isPlayerOneTurn, setIsPlayerOneTurn] = React.useState(true);
-  // const [player1Graveyard, setPlayer1Gravetyard] = React.useState([])
-  // const [player2Graveyard, setPlayer2Gravetyard] = React.useState([])
-  // const [moveTo, setMoveTo] = React.useState(undefined);
   const [selectedPiece, setSelectedPiece] = React.useState(undefined);
   const [boardState, setBoardState] = React.useState(INITIAL_BOARD_STATE);
 
-  const movePiece = (rowIndex, columnIndex, piece) => {
-    console.log('hello', !piece);
-    if (!piece) {
-      console.log('nothing to do!');
-      return;
-    }
-    // make sure a piece exist
-    // if()
-    console.log('row ', rowIndex, 'column: ', columnIndex);
-    // make sure a piece currently exists at the given location.
-  };
-
   const handleMove = (piece, row, column) => {
+    // Logic for clicking on empty space.
     if (!piece) {
-      console.log('you clicked on an empty space');
-      // if there is arlready a selected piece move it here
+      // if there is arlready a piece selected
       if (selectedPiece) {
-        console.log('place the piece to empty space');
-        console.log('the current board state: ', boardState);
-        isValidMove(selectedPiece);
-        const boardStateCopy = [...boardState];
-        // delete it from previous location
-        boardStateCopy[selectedPiece.row][selectedPiece.column] = null;
-        // add the piece to its new location
-        boardStateCopy[row][column] = selectedPiece.piece;
+        // attempt to move selected piece to new location as long as it is a valid move.
 
-        setBoardState(boardStateCopy);
-        setSelectedPiece(undefined);
-        setIsPlayerOneTurn((prev) => !prev);
+        const boardStateCopy = [...boardState];
+        if (isValidMove(selectedPiece)) {
+          // remove piece from previous location
+          boardStateCopy[selectedPiece.row][selectedPiece.column] = null;
+          // add the piece to its new location
+          boardStateCopy[row][column] = selectedPiece.piece;
+          // update the board state
+          setBoardState(boardStateCopy);
+          // reset the selected piece
+          setSelectedPiece(undefined);
+          // change player turn
+          setIsPlayerOneTurn((prev) => !prev);
+        }
       }
       return;
     }
     setSelectedPiece({ piece, row, column });
-    //end of move
-    // swith two other player
-    // if (currentTurn === 'Player1') {
-    //   setCurrentTurn('Player2');
-    // } else {
-    //   setCurrentTurn('Player1');
-    // }
   };
 
   const isValidMove = (selectedPieceObject, to) => {
     const { piece, row: fromRow, column: fromColumn } = selectedPieceObject;
-    console.log('the piece: ', piece, fromRow, fromColumn);
     if (piece === 'red') {
-      // red pieces can only move up in the board
+      // what row is it currently sitting in
+      console.log('the row it is in now: ', fromRow);
+      console.log('the row it wants to go: ', to);
+      return true;
     } else {
       // black pieces can only move down in the board
+      return true;
     }
   };
 
@@ -117,7 +99,7 @@ const GameBoard = () => {
       <ul>
         {boardState.map((row, rowIndex) => {
           return (
-            <li style={{ display: 'flex', width: 'fit-content' }}>
+            <li key={`row-${rowIndex}`} style={{ display: 'flex', width: 'fit-content' }}>
               {row.map((piece, columnIndex) => {
                 const isSelected =
                   selectedPiece &&
@@ -126,6 +108,7 @@ const GameBoard = () => {
                   columnIndex === selectedPiece.column;
                 return (
                   <Square
+                    key={`column-${columnIndex}`}
                     onClick={() => {
                       console.log('currently selected piece: ', selectedPiece);
                       handleMove(piece, rowIndex, columnIndex);
