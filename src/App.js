@@ -50,7 +50,8 @@ const GameBoard = () => {
         // attempt to move selected piece to new location as long as it is a valid move.
 
         const boardStateCopy = [...boardState];
-        if (isValidMove(selectedPiece)) {
+        const newLocation = { row, column };
+        if (isValidMove(selectedPiece, newLocation)) {
           // remove piece from previous location
           boardStateCopy[selectedPiece.row][selectedPiece.column] = null;
           // add the piece to its new location
@@ -61,6 +62,9 @@ const GameBoard = () => {
           setSelectedPiece(undefined);
           // change player turn
           setIsPlayerOneTurn((prev) => !prev);
+        } else {
+          // alert('Invalid move. Try another spot.');
+          return;
         }
       }
       return;
@@ -68,18 +72,48 @@ const GameBoard = () => {
     setSelectedPiece({ piece, row, column });
   };
 
-  const isValidMove = (selectedPieceObject, to) => {
-    const { piece, row: fromRow, column: fromColumn } = selectedPieceObject;
+  const isValidMove = (selectedPiece, newLocation) => {
+    const { piece, row: fromRow, column: fromColumn } = selectedPiece;
     if (piece === 'red') {
       // what row is it currently sitting in
-      console.log('the row it is in now: ', fromRow);
-      console.log('the row it wants to go: ', to);
-      return true;
-    } else {
+      // console.log('the row it is in now: ', fromRow);
+      // console.log('the row it wants to go: ', newLocation.row);
+      console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
+      console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
+      console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
+      console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
+      if (isMovingUp(fromRow, newLocation.row)) {
+        if (
+          isMovingLeft(fromColumn, newLocation.column) ||
+          isMovingRight(fromColumn, newLocation.column)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    } else if (piece === 'black') {
       // black pieces can only move down in the board
-      return true;
+      console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
+      console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
+      console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
+      console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
+      console.log('what');
+      if (isMovingDown(fromRow, newLocation.row)) {
+        if (
+          isMovingLeft(fromColumn, newLocation.column) ||
+          isMovingRight(fromColumn, newLocation.column)
+        ) {
+          return true;
+        }
+      }
+      return false;
     }
   };
+
+  const isMovingUp = (fromRow, toRow) => fromRow > toRow;
+  const isMovingDown = (fromRow, toRow) => fromRow < toRow;
+  const isMovingRight = (fromColumn, toColumn) => fromColumn < toColumn;
+  const isMovingLeft = (fromColumn, toColumn) => fromColumn > toColumn;
 
   const handleReset = () => {
     console.log('trying to re-start');
