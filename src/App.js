@@ -43,6 +43,16 @@ const GameBoard = () => {
   const [boardState, setBoardState] = React.useState(INITIAL_BOARD_STATE);
 
   const handleMove = (piece, row, column) => {
+    // Make sure that if they are trying to make a move is for the correct player.
+    // console.log('the piece: ', piece);
+    // if (isPlayerOneTurn && piece !== 'red') {
+    //   console.log('the birds: ', isPlayerOneTurn);
+    //   alert('Right now only player 1 can move the Red pieces.');
+    //   return;
+    // } else if (!isPlayerOneTurn && piece !== 'black') {
+    //   alert('Right now only player 2 can move the black pieces.');
+    //   return;
+    // }
     // Logic for clicking on empty space.
     if (!piece) {
       // if there is arlready a piece selected
