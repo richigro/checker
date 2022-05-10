@@ -43,34 +43,15 @@ const GameBoard = () => {
   const [boardState, setBoardState] = React.useState(INITIAL_BOARD_STATE);
 
   const handleMove = (piece, row, column) => {
-    // Make sure that if they are trying to make a move is for the correct player.
-    // console.log('the piece: ', piece);
-    // if (isPlayerOneTurn && piece !== 'red') {
-    //   console.log('the birds: ', isPlayerOneTurn);
-    //   alert('Right now only player 1 can move the Red pieces.');
-    //   return;
-    // } else if (!isPlayerOneTurn && piece !== 'black') {
-    //   alert('Right now only player 2 can move the black pieces.');
-    //   return;
-    // }
-    // Logic for clicking on empty space.
     if (!piece) {
-      // if there is arlready a piece selected
       if (selectedPiece) {
-        // attempt to move selected piece to new location as long as it is a valid move.
-
-        const boardStateCopy = [...boardState];
         const newLocation = { row, column };
         if (isValidMove(selectedPiece, newLocation)) {
-          // remove piece from previous location
+          const boardStateCopy = [...boardState];
           boardStateCopy[selectedPiece.row][selectedPiece.column] = null;
-          // add the piece to its new location
           boardStateCopy[row][column] = selectedPiece.piece;
-          // update the board state
           setBoardState(boardStateCopy);
-          // reset the selected piece
           setSelectedPiece(undefined);
-          // change player turn
           setIsPlayerOneTurn((prev) => !prev);
         } else {
           alert('Invalid move. Try Moving selected piece to another location.');
@@ -79,6 +60,16 @@ const GameBoard = () => {
       }
       return;
     }
+    // we should only be able to select a piece if you are the correct player
+    console.log('the piece you are trying to select is: ', piece);
+    if (isPlayerOneTurn && piece !== 'red') {
+      alert('Player 1 can only move red pieces at this time.');
+      return;
+    } else if (!isPlayerOneTurn && piece !== 'black') {
+      alert('Player 2 can only move black pieces at this time.');
+      return;
+    }
+    console.log('got this far');
     setSelectedPiece({ piece, row, column });
   };
 
@@ -88,10 +79,10 @@ const GameBoard = () => {
       // what row is it currently sitting in
       // console.log('the row it is in now: ', fromRow);
       // console.log('the row it wants to go: ', newLocation.row);
-      console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
-      console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
-      console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
-      console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
+      // console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
+      // console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
+      // console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
+      // console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
       if (isMovingUp(fromRow, newLocation.row)) {
         if (
           isMovingLeft(fromColumn, newLocation.column) ||
@@ -103,11 +94,11 @@ const GameBoard = () => {
       return false;
     } else if (piece === 'black') {
       // black pieces can only move down in the board
-      console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
-      console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
-      console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
-      console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
-      console.log('what');
+      // console.log('is the piece moving up? ', isMovingUp(fromRow, newLocation.row));
+      // console.log('is the piece moving Down? ', isMovingDown(fromRow, newLocation.row));
+      // console.log('is the piece moving Right? ', isMovingRight(fromColumn, newLocation.column));
+      // console.log('left? ', isMovingLeft(fromColumn, newLocation.column));
+      // console.log('what');
       if (isMovingDown(fromRow, newLocation.row)) {
         if (
           isMovingLeft(fromColumn, newLocation.column) ||
@@ -126,11 +117,19 @@ const GameBoard = () => {
   const isMovingLeft = (fromColumn, toColumn) => fromColumn > toColumn;
 
   const handleReset = () => {
-    // console.log('trying to re-start');
-    // console.log('the current board state: ', boardState, INITIAL_BOARD_STATE);
+    console.log('restarting game state...');
     setIsPlayerOneTurn(true);
     setSelectedPiece(undefined);
-    setBoardState(INITIAL_BOARD_STATE);
+    setBoardState([
+      [null, 'black', null, 'black', null, 'black', null, 'black'],
+      ['black', null, 'black', null, 'black', null, 'black', null],
+      [null, 'black', null, 'black', null, 'black', null, 'black'],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      ['red', null, 'red', null, 'red', null, 'red', null],
+      [null, 'red', null, 'red', null, 'red', null, 'red'],
+      ['red', null, 'red', null, 'red', null, 'red', null]
+    ]);
   };
 
   return (
@@ -154,10 +153,9 @@ const GameBoard = () => {
                   <Square
                     key={`column-${columnIndex}`}
                     onClick={() => {
-                      console.log('currently selected piece: ', selectedPiece);
                       handleMove(piece, rowIndex, columnIndex);
                     }}>
-                    <Piece piece={piece} isSelected={isSelected} />
+                    {piece && <Piece piece={piece} isSelected={isSelected} />}
                   </Square>
                 );
               })}
